@@ -2,10 +2,11 @@ services:
   # Backend API Service
   - type: web
     name: compiler-server-api
+    branch: main
     env: python
     plan: starter
     buildCommand: |
-      pip install -r requirements.txt
+        pip install --upgrade pip && pip install -r requirements.txt
     startCommand: |
       gunicorn --bind 0.0.0.0:$PORT --workers 4 --timeout 120 src.main:app
     envVars:
@@ -29,15 +30,20 @@ services:
     env: node
     plan: starter
     buildCommand: |
-      cd compiler-dashboard
-      npm install
-      npm run build
+     if [ -d "compiler-dashboard" ]; then
+       cd compiler-dashboard
+       npm install
+       npm run build
+     else
+       echo "Error: compiler-dashboard directory missing!"
+       exit 1
+     fi
     startCommand: |
       cd compiler-dashboard
       npm run preview -- --host 0.0.0.0 --port $PORT
     envVars:
       - key: VITE_API_BASE_URL
-        value: https://compiler-server-api.onrender.com/api
+        value: https://dev-tlak-compiler-server.onrender.com/api
 
 databases:
   - name: compiler-server-db

@@ -31,8 +31,8 @@ COPY . .
 RUN mkdir -p logs
 
 # Create non-root user
-RUN useradd -m -s /bin/bash appuser && \
-    chown -R appuser:appuser /app
+RUN useradd -m -s /bin/bash appuser && chown -R appuser:appuser /app
+RUN id appuser || echo "المستخدم appuser غير موجود"
 USER appuser
 
 # Expose port

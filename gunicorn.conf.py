@@ -40,8 +40,7 @@ tmp_upload_dir = None
 keyfile = None
 certfile = None
 
-# Application
-wsgi_module = "src.main:app"
+
 
 # Preload application for better performance
 preload_app = True
@@ -91,3 +90,5 @@ def post_request(worker, req, environ, resp):
     """Called after a worker processes the request."""
     worker.log.debug("%s %s - %s" % (req.method, req.path, resp.status_code))
 
+
+loglevel = "debug"

@@ -1,0 +1,39 @@
+# Python Runtime Environment
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /workspace
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    make \
+    git \
+    curl \
+    vim \
+    nano \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install common Python packages
+RUN pip install --no-cache-dir \
+    requests \
+    numpy \
+    pandas \
+    matplotlib \
+    flask \
+    django \
+    fastapi \
+    jupyter
+
+# Create a non-root user
+RUN useradd -m -s /bin/bash coderunner
+USER coderunner
+
+# Set environment variables
+ENV PYTHONPATH=/workspace
+ENV PYTHONUNBUFFERED=1
+
+# Default command
+CMD ["/bin/bash"]
+

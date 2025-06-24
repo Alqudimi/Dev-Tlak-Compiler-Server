@@ -1,0 +1,47 @@
+services:
+  # Backend API Service
+  - type: web
+    name: compiler-server-api
+    env: python
+    plan: starter
+    buildCommand: |
+      pip install -r requirements.txt
+    startCommand: |
+      gunicorn --bind 0.0.0.0:$PORT --workers 4 --timeout 120 src.main:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: compiler-server-db
+          property: connectionString
+      - key: DOCKER_HOST
+        value: unix:///var/run/docker.sock
+    healthCheckPath: /health
+    
+  # Frontend Dashboard Service  
+  - type: web
+    name: compiler-server-dashboard
+    env: node
+    plan: starter
+    buildCommand: |
+      cd compiler-dashboard
+      npm install
+      npm run build
+    startCommand: |
+      cd compiler-dashboard
+      npm run preview -- --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://compiler-server-api.onrender.com/api
+
+databases:
+  - name: compiler-server-db
+    databaseName: compiler_server
+    user: compiler_user
+    plan: starter
+
